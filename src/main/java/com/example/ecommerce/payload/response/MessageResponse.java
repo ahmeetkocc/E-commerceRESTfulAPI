@@ -1,4 +1,4 @@
-package com.example.ecommerce.payload.request;
+package com.example.ecommerce.payload.response;
 
 import lombok.*;
 
