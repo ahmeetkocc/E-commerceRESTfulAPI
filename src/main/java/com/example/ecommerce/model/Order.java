@@ -5,7 +5,6 @@ import lombok.*;
 import java.time.LocalDateTime;
 import java.util.Set;
 
-
 @Entity
 @Table(name ="orders")
 @Getter
@@ -21,8 +20,12 @@ public class Order {
     private LocalDateTime orderDate;
 
     @ManyToMany
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @JoinTable(
+            name = "order_user",
+            joinColumns = @JoinColumn(name = "order_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+    private Set<User> users;
 
     private Double totalAmount;
 
@@ -30,4 +33,8 @@ public class Order {
     private Set<OrderItem> orderItems;
 
     private String status;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 }

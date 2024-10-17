@@ -26,7 +26,7 @@ public class JwtUtils {
     public String getUsernameFromJwtToken(String token) {
         return Jwts.parser()
                 .setSigningKey(jwtSecret)
-                .parseClaimsJwt(token)
+                .parseClaimsJws(token)  // Burada parseClaimsJwt yerine parseClaimsJws olmalı
                 .getBody()
                 .getSubject();
     }
