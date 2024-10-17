@@ -1,21 +1,17 @@
 package com.example.ecommerce.security;
 
+import jakarta.servlet.*;
+import jakarta.servlet.http.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.authentication.*;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.*;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-import io.jsonwebtoken.JwtException;
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @Component
-public class AuthTokenFilter extends OncePerRequestFilter{
+public class AuthTokenFilter extends OncePerRequestFilter {
 
     @Autowired
     private JwtUtils jwtUtils;
@@ -27,13 +23,13 @@ public class AuthTokenFilter extends OncePerRequestFilter{
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain)
-                                    throws ServletException, IOException {
+            throws ServletException, IOException {
         try {
             String jwt = parseJwt(request);
-            if(jwt != null && jwtUtils.validateJwtToken(jwt)){
+            if (jwt != null && jwtUtils.validateJwtToken(jwt)) {
                 String username = jwtUtils.getUsernameFromJwtToken(jwt);
 
-                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+                UserDetailsImpl userDetails = (UserDetailsImpl) userDetailsService.loadUserByUsername(username);
                 UsernamePasswordAuthenticationToken authentication =
                         new UsernamePasswordAuthenticationToken(
                                 userDetails,
@@ -41,19 +37,20 @@ public class AuthTokenFilter extends OncePerRequestFilter{
                                 userDetails.getAuthorities());
                 authentication.setDetails(
                         new WebAuthenticationDetailsSource().buildDetails(request));
+
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
-        } catch (JwtException e){
-            //Log ve hata yönetimi ekle.
+        } catch (Exception e) {
+            // Hata yönetimi
         }
 
         filterChain.doFilter(request, response);
     }
 
-    private String parseJwt(HttpServletRequest request){
+    private String parseJwt(HttpServletRequest request) {
         String headerAuth = request.getHeader("Authorization");
 
-        if(headerAuth != null && headerAuth.startsWith("Bearer ")) {
+        if (headerAuth != null && headerAuth.startsWith("Bearer ")) {
             return headerAuth.substring(7);
         }
 

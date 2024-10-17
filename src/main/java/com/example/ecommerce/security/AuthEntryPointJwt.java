@@ -1,9 +1,10 @@
 package com.example.ecommerce.security;
 
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.*;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
-import jakarta.servlet.http.*;
 import java.io.IOException;
 
 @Component
@@ -13,7 +14,7 @@ public class AuthEntryPointJwt implements AuthenticationEntryPoint {
     public void commence(HttpServletRequest request,
                          HttpServletResponse response,
                          AuthenticationException authException)
-                    throws IOException {
+            throws IOException, ServletException {
         response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Error: Unauthorized");
     }
 }
